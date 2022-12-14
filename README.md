@@ -1,19 +1,4 @@
-# boiler :hotsprings:
+# grain
 
-A Deno starter template.
-
-## Summary
-
-This minimal template includes the following:
-
-- VSCode extension setup
-- Automated release setup
-
-## Usage
-
-Using [degit](https://github.com/tiged/tiged), unpack from the branch `fresh` in
-order to avoid pulling down this `README`:
-
-```bash
-degit justinawrey/boiler#fresh <dest>
-```
+[![deno module](https://shield.deno.dev/x/grain)](https://deno.land/x/grain)
+[![release](https://github.com/justinawrey/grain/actions/workflows/release.yml/badge.svg)](https://github.com/justinawrey/grain/actions/workflows/release.yml)
