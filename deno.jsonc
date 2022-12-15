@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "grain",
+    "types": ["./lib/jsx.d.ts"],
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+  },
+  "importMap": "import_map.jsonc",
+  "tasks": {
+    "dev": "deno bundle --watch app.tsx dist/app.js & deno run --allow-net --allow-read https://deno.land/std/http/file_server.ts dist"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "grain/jsx-runtime": "./lib/jsx-runtime.ts"
+  }
+}
