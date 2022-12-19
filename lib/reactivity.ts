@@ -1,12 +1,7 @@
-/* Global effect context */
-
 const context: EffectCallback[] = [];
-
-/* Effects */
-
 type EffectCallback = () => void;
 
-function createEffect(fn: EffectCallback): void {
+function effect(fn: EffectCallback): void {
   context.push(fn);
 
   // If the effect throws, we still need to remove it from global context
@@ -17,39 +12,8 @@ function createEffect(fn: EffectCallback): void {
   }
 }
 
-/* Signals */
-
-type SignalGetter<T> = () => T;
-type SignalSetter<T> = (newValue: T) => void;
-
-function createSignal<T>(defaultValue: T): [SignalGetter<T>, SignalSetter<T>] {
-  let value = defaultValue;
-  const subscribedEffects: Set<EffectCallback> = new Set();
-
-  const getter: SignalGetter<T> = () => {
-    const currentEffect = context[context.length - 1];
-    if (currentEffect) {
-      subscribedEffects.add(currentEffect);
-    }
-
-    return value;
-  };
-
-  const setter: SignalSetter<T> = (newValue) => {
-    value = newValue;
-
-    for (const effect of subscribedEffects) {
-      effect();
-    }
-  };
-
-  return [getter, setter];
-}
-
-/* Reactive */
-
 const proxySymbol = Symbol("isProxy");
-type Reactive<T> = {
+export type Reactive<T> = {
   value: T;
 };
 
@@ -95,28 +59,11 @@ function reactive<T>(defaultValue: T): Reactive<T> {
 function computed<T>(fn: () => T): Reactive<T> {
   const reactiveObj = reactive(fn());
 
-  createEffect(() => {
+  effect(() => {
     reactiveObj.value = fn();
   });
 
   return reactiveObj;
 }
 
-function watch<T>(
-  signal: SignalGetter<T>,
-  cb: (prev: T, curr: T) => void,
-): void {
-  let prev = signal();
-  let curr = signal();
-
-  createEffect(() => {
-    prev = curr;
-    curr = signal();
-
-    if (prev !== curr) {
-      cb(prev, curr);
-    }
-  });
-}
-
-export { computed, createEffect, createSignal, isProxy, reactive };
+export { computed, effect, isProxy, reactive };

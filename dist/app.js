@@ -3,7 +3,7 @@
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
 const context = [];
-function createEffect(fn) {
+function effect(fn) {
     context.push(fn);
     try {
         fn();
@@ -45,12 +45,13 @@ function reactive(defaultValue) {
 }
 function computed(fn) {
     const reactiveObj = reactive(fn());
-    createEffect(()=>{
+    effect(()=>{
         reactiveObj.value = fn();
     });
     return reactiveObj;
 }
 function createDomElement(element, props) {
+    console.log("element", element, "props", props);
     const el = document.createElement(element);
     for (const [name, value] of Object.entries(props)){
         if (name.startsWith("on")) {
@@ -67,7 +68,7 @@ function createDomElement(element, props) {
                     if (isProxy(child)) {
                         const node = document.createTextNode("");
                         el.appendChild(node);
-                        createEffect(()=>{
+                        effect(()=>{
                             node.textContent = child.value;
                         });
                     } else {
@@ -75,6 +76,12 @@ function createDomElement(element, props) {
                     }
                 }
             }
+            continue;
+        }
+        if (isProxy(value)) {
+            effect(()=>{
+                el.setAttribute(name, value.value);
+            });
             continue;
         }
         el.setAttribute(name, value);
@@ -88,17 +95,16 @@ function jsx(element, props) {
 function mount(root) {
     document.body.appendChild(root());
 }
-function Text({ name  }) {
-    return jsx("p", {
-        children: [
-            "Hello, ",
-            name
-        ]
-    });
-}
 function App() {
     const count = reactive(0);
     const doubledCount = computed(()=>count.value * 2);
+    effect(()=>{
+        console.log("doubled count:", doubledCount.value);
+    });
+    const name = reactive("Justin");
+    function setName(e) {
+        name.value = e.target.value;
+    }
     return jsx("div", {
         children: [
             jsx("button", {
@@ -115,8 +121,21 @@ function App() {
                 ]
             }),
             jsx(Text, {
-                name: "Justin"
+                name: name
+            }),
+            jsx("input", {
+                type: "text",
+                onInput: setName
             })
+        ]
+    });
+}
+function Text({ name  }) {
+    return jsx("p", {
+        "aria-label": name,
+        children: [
+            "Hello, ",
+            name
         ]
     });
 }
