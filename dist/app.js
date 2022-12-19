@@ -43,6 +43,13 @@ function reactive(defaultValue) {
         }
     });
 }
+function computed(fn) {
+    const reactiveObj = reactive(fn());
+    createEffect(()=>{
+        reactiveObj.value = fn();
+    });
+    return reactiveObj;
+}
 function createDomElement(element, props) {
     const el = document.createElement(element);
     for (const [name, value] of Object.entries(props)){
@@ -91,6 +98,7 @@ function Text({ name  }) {
 }
 function App() {
     const count = reactive(0);
+    const doubledCount = computed(()=>count.value * 2);
     return jsx("div", {
         children: [
             jsx("button", {
@@ -98,6 +106,12 @@ function App() {
                 children: [
                     "Count is: ",
                     count
+                ]
+            }),
+            jsx("p", {
+                children: [
+                    "Doubled count is: ",
+                    doubledCount
                 ]
             }),
             jsx(Text, {

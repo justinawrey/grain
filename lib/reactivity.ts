@@ -92,6 +92,16 @@ function reactive<T>(defaultValue: T): Reactive<T> {
   });
 }
 
+function computed<T>(fn: () => T): Reactive<T> {
+  const reactiveObj = reactive(fn());
+
+  createEffect(() => {
+    reactiveObj.value = fn();
+  });
+
+  return reactiveObj;
+}
+
 function watch<T>(
   signal: SignalGetter<T>,
   cb: (prev: T, curr: T) => void,
@@ -109,4 +119,4 @@ function watch<T>(
   });
 }
 
-export { createEffect, createSignal, isProxy, reactive };
+export { computed, createEffect, createSignal, isProxy, reactive };
