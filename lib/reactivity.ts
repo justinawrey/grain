@@ -22,7 +22,7 @@ function createEffect(fn: EffectCallback): void {
 type SignalGetter<T> = () => T;
 type SignalSetter<T> = (newValue: T) => void;
 
-function reactive<T>(defaultValue: T): [SignalGetter<T>, SignalSetter<T>] {
+function createSignal<T>(defaultValue: T): [SignalGetter<T>, SignalSetter<T>] {
   let value = defaultValue;
   const subscribedEffects: Set<EffectCallback> = new Set();
 
@@ -63,4 +63,4 @@ function watch<T>(
   });
 }
 
-export { createEffect, reactive, watch };
+export { createSignal };

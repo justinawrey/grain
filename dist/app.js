@@ -11,7 +11,7 @@ function createEffect(fn) {
         context.pop();
     }
 }
-function reactive(defaultValue) {
+function createSignal(defaultValue) {
     let value = defaultValue;
     const subscribedEffects = new Set();
     const getter = ()=>{
@@ -31,17 +31,6 @@ function reactive(defaultValue) {
         getter,
         setter
     ];
-}
-function watch(signal, cb) {
-    let prev = signal();
-    let curr = signal();
-    createEffect(()=>{
-        prev = curr;
-        curr = signal();
-        if (prev !== curr) {
-            cb(prev, curr);
-        }
-    });
 }
 function createDomElement(element, props) {
     const el = document.createElement(element);
@@ -89,8 +78,7 @@ function Text({ name  }) {
     });
 }
 function App() {
-    const [count, setCount] = reactive(0);
-    watch(count, (prev, curr)=>console.log("Count changed from", prev, "to", curr));
+    const [count, setCount] = createSignal(0);
     return jsx("div", {
         children: [
             jsx("button", {
