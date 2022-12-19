@@ -63,4 +63,4 @@ function watch<T>(
   });
 }
 
-export { createSignal };
+export { createEffect, createSignal };
