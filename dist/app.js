@@ -11,26 +11,37 @@ function createEffect(fn) {
         context.pop();
     }
 }
-function createSignal(defaultValue) {
-    let value = defaultValue;
+const proxySymbol = Symbol("isProxy");
+function isProxy(obj) {
+    return obj[proxySymbol];
+}
+function reactive(defaultValue) {
+    function checkValue(prop) {
+        if (prop !== "value") throw new Error('Only "value" is supported');
+    }
     const subscribedEffects = new Set();
-    const getter = ()=>{
-        const currentEffect = context[context.length - 1];
-        if (currentEffect) {
-            subscribedEffects.add(currentEffect);
-        }
-        return value;
+    const reactiveObj = {
+        value: defaultValue
     };
-    const setter = (newValue)=>{
-        value = newValue;
-        for (const effect of subscribedEffects){
-            effect();
+    return new Proxy(reactiveObj, {
+        get (target, prop, receiver) {
+            if (prop === proxySymbol) return true;
+            checkValue(prop);
+            const currentEffect = context[context.length - 1];
+            if (currentEffect) {
+                subscribedEffects.add(currentEffect);
+            }
+            return Reflect.get(target, prop, receiver);
+        },
+        set (target, prop, newValue, receiver) {
+            checkValue(prop);
+            const setResult = Reflect.set(target, prop, newValue, receiver);
+            for (const effect of subscribedEffects){
+                effect();
+            }
+            return setResult;
         }
-    };
-    return [
-        getter,
-        setter
-    ];
+    });
 }
 function createDomElement(element, props) {
     const el = document.createElement(element);
@@ -45,15 +56,16 @@ function createDomElement(element, props) {
                 if (typeof child === "string") {
                     el.appendChild(document.createTextNode(child));
                 }
-                if (typeof child === "function") {
-                    const node = document.createTextNode("");
-                    el.appendChild(node);
-                    createEffect(()=>{
-                        node.textContent = child();
-                    });
-                }
                 if (typeof child === "object") {
-                    el.appendChild(child);
+                    if (isProxy(child)) {
+                        const node = document.createTextNode("");
+                        el.appendChild(node);
+                        createEffect(()=>{
+                            node.textContent = child.value;
+                        });
+                    } else {
+                        el.appendChild(child);
+                    }
                 }
             }
             continue;
@@ -78,11 +90,11 @@ function Text({ name  }) {
     });
 }
 function App() {
-    const [count, setCount] = createSignal(0);
+    const count = reactive(0);
     return jsx("div", {
         children: [
             jsx("button", {
-                onClick: ()=>setCount(1),
+                onClick: ()=>count.value++,
                 children: [
                     "Count is: ",
                     count

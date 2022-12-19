@@ -1,4 +1,4 @@
-import { createSignal, mount } from "./lib/mod.ts";
+import { computed, mount, reactive } from "./lib/mod.ts";
 
 interface TextProps {
   name: string;
@@ -9,13 +9,15 @@ function Text({ name }: TextProps) {
 }
 
 function App() {
-  const [count, setCount] = createSignal(0);
+  const count = reactive(0);
+  const doubledCount = computed(() => count.value * 2);
 
   return (
     <div>
-      <button onClick={() => setCount(1)}>
+      <button onClick={() => count.value++}>
         Count is: {count}
       </button>
+      <p>Doubled count is: {doubledCount}</p>
       <Text name="Justin" />
     </div>
   );

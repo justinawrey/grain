@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { createEffect } from "./reactivity.ts";
+import { createEffect, isProxy } from "./reactivity.ts";
 
 function createDomElement(element: string, props: any) {
   const el = document.createElement(element);
@@ -20,19 +20,19 @@ function createDomElement(element: string, props: any) {
           el.appendChild(document.createTextNode(child));
         }
 
-        // Signal (janky)
-        if (typeof child === "function") {
-          const node = document.createTextNode("");
-          el.appendChild(node);
-
-          createEffect(() => {
-            node.textContent = child();
-          });
-        }
-
-        // Html element
         if (typeof child === "object") {
-          el.appendChild(child);
+          // Reactive value
+          if (isProxy(child)) {
+            const node = document.createTextNode("");
+            el.appendChild(node);
+
+            createEffect(() => {
+              node.textContent = child.value;
+            });
+          } else {
+            // Html element
+            el.appendChild(child);
+          }
         }
       }
 

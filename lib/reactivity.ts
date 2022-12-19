@@ -46,6 +46,52 @@ function createSignal<T>(defaultValue: T): [SignalGetter<T>, SignalSetter<T>] {
   return [getter, setter];
 }
 
+/* Reactive */
+
+const proxySymbol = Symbol("isProxy");
+type Reactive<T> = {
+  value: T;
+};
+
+// deno-lint-ignore no-explicit-any
+function isProxy(obj: any) {
+  return obj[proxySymbol];
+}
+
+function reactive<T>(defaultValue: T): Reactive<T> {
+  function checkValue(prop: string | symbol) {
+    if (prop !== "value") throw new Error('Only "value" is supported');
+  }
+
+  const subscribedEffects: Set<EffectCallback> = new Set();
+  const reactiveObj = { value: defaultValue };
+
+  return new Proxy(reactiveObj, {
+    get(target, prop, receiver) {
+      if (prop === proxySymbol) return true;
+      checkValue(prop);
+
+      const currentEffect = context[context.length - 1];
+      if (currentEffect) {
+        subscribedEffects.add(currentEffect);
+      }
+
+      return Reflect.get(target, prop, receiver);
+    },
+
+    set(target, prop, newValue, receiver) {
+      checkValue(prop);
+
+      const setResult = Reflect.set(target, prop, newValue, receiver);
+      for (const effect of subscribedEffects) {
+        effect();
+      }
+
+      return setResult;
+    },
+  });
+}
+
 function watch<T>(
   signal: SignalGetter<T>,
   cb: (prev: T, curr: T) => void,
@@ -63,4 +109,4 @@ function watch<T>(
   });
 }
 
-export { createEffect, createSignal };
+export { createEffect, createSignal, isProxy, reactive };
