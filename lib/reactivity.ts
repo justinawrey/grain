@@ -1,7 +1,8 @@
-const context: EffectCallback[] = [];
-type EffectCallback = () => void;
+import { proxySymbol } from "./is-proxy.ts";
 
-function effect(fn: EffectCallback): void {
+const context: (() => void)[] = [];
+
+function effect(fn: () => void): void {
   context.push(fn);
 
   // If the effect throws, we still need to remove it from global context
@@ -12,22 +13,16 @@ function effect(fn: EffectCallback): void {
   }
 }
 
-const proxySymbol = Symbol("isProxy");
-export type Reactive<T> = {
+type Reactive<T> = {
   value: T;
 };
-
-// deno-lint-ignore no-explicit-any
-function isProxy(obj: any) {
-  return obj[proxySymbol];
-}
 
 function reactive<T>(defaultValue: T): Reactive<T> {
   function checkValue(prop: string | symbol) {
     if (prop !== "value") throw new Error('Only "value" is supported');
   }
 
-  const subscribedEffects: Set<EffectCallback> = new Set();
+  const subscribedEffects: Set<() => void> = new Set();
   const reactiveObj = { value: defaultValue };
 
   return new Proxy(reactiveObj, {
@@ -66,4 +61,4 @@ function computed<T>(fn: () => T): Reactive<T> {
   return reactiveObj;
 }
 
-export { computed, effect, isProxy, reactive };
+export { computed, effect, type Reactive, reactive };

@@ -2,6 +2,10 @@
 // deno-lint-ignore-file
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
+const proxySymbol = Symbol("isProxy");
+function isProxy(obj) {
+    return obj[proxySymbol];
+}
 const context = [];
 function effect(fn) {
     context.push(fn);
@@ -10,10 +14,6 @@ function effect(fn) {
     } finally{
         context.pop();
     }
-}
-const proxySymbol = Symbol("isProxy");
-function isProxy(obj) {
-    return obj[proxySymbol];
 }
 function reactive(defaultValue) {
     function checkValue(prop) {
