@@ -2,11 +2,9 @@
 import { effect, isProxy } from "./reactivity.ts";
 
 function createDomElement(element: string, props: any) {
-  console.log("element", element, "props", props);
   const el = document.createElement(element);
 
   for (const [name, value] of Object.entries(props)) {
-    // console.log("name", name, "value", value);
     // This may not be specific enough of a check.
     // For example the attribute "onset" would proc.
     if (name.startsWith("on")) {

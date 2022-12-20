@@ -51,7 +51,6 @@ function computed(fn) {
     return reactiveObj;
 }
 function createDomElement(element, props) {
-    console.log("element", element, "props", props);
     const el = document.createElement(element);
     for (const [name, value] of Object.entries(props)){
         if (name.startsWith("on")) {
