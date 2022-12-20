@@ -1,16 +1,16 @@
 import { proxySymbol } from "./is-proxy.ts";
 
-const context: (() => void)[] = [];
+const $$effectContext$$: (() => void)[] = [];
 
 // Creates an effect that runs when reactive values are changed
 function effect(fn: () => void): void {
-  context.push(fn);
+  $$effectContext$$.push(fn);
 
   // If the effect throws, we still need to remove it from global context
   try {
     fn();
   } finally {
-    context.pop();
+    $$effectContext$$.pop();
   }
 }
 
@@ -32,7 +32,7 @@ function reactive<T>(defaultValue: T): Reactive<T> {
       if (prop === proxySymbol) return true;
       checkValue(prop);
 
-      const currentEffect = context[context.length - 1];
+      const currentEffect = $$effectContext$$[$$effectContext$$.length - 1];
       if (currentEffect) {
         subscribedEffects.add(currentEffect);
       }
