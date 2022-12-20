@@ -2,6 +2,7 @@ import { proxySymbol } from "./is-proxy.ts";
 
 const context: (() => void)[] = [];
 
+// Creates an effect that runs when reactive values are changed
 function effect(fn: () => void): void {
   context.push(fn);
 
@@ -17,6 +18,7 @@ type Reactive<T> = {
   value: T;
 };
 
+// Creates a reactive value
 function reactive<T>(defaultValue: T): Reactive<T> {
   function checkValue(prop: string | symbol) {
     if (prop !== "value") throw new Error('Only "value" is supported');
@@ -51,6 +53,7 @@ function reactive<T>(defaultValue: T): Reactive<T> {
   });
 }
 
+// Creates a derived reactive value
 function computed<T>(fn: () => T): Reactive<T> {
   const reactiveObj = reactive(fn());
 
