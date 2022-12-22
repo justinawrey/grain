@@ -1,4 +1,5 @@
-import { computed, effect, mount, type Reactive, reactive } from "./lib/mod.ts";
+import { computed, effect, type Reactive, reactive } from "./lib/reactivity.ts";
+import { mount } from "./lib/dom.ts";
 
 function App() {
   const count = reactive(0);
