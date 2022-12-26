@@ -6,13 +6,13 @@ const proxySymbol = Symbol("isProxy");
 function isProxy(obj) {
     return obj[proxySymbol];
 }
-const $$effectContext$$ = [];
+const effectContext = [];
 function effect(fn) {
-    $$effectContext$$.push(fn);
+    effectContext.push(fn);
     try {
         fn();
     } finally{
-        $$effectContext$$.pop();
+        effectContext.pop();
     }
 }
 function reactive(defaultValue) {
@@ -27,7 +27,7 @@ function reactive(defaultValue) {
         get (target, prop, receiver) {
             if (prop === proxySymbol) return true;
             checkValue(prop);
-            const currentEffect = $$effectContext$$[$$effectContext$$.length - 1];
+            const currentEffect = effectContext[effectContext.length - 1];
             if (currentEffect) {
                 subscribedEffects.add(currentEffect);
             }
