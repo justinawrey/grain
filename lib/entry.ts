@@ -6,7 +6,7 @@ function csr(): Response {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Grain App</title>
-    <script type="module" src="/app.js"></script>
+    <script type="module" src="/app-client.js"></script>
   </head>
   <body>
   </body>

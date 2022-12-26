@@ -1,5 +1,4 @@
 import { computed, effect, type Reactive, reactive } from "./lib/reactivity.ts";
-import { mount } from "./lib/dom.ts";
 
 function App() {
   const count = reactive(0);
@@ -34,4 +33,4 @@ function Text({ name }: { name: Reactive<string> }) {
   );
 }
 
-mount(App);
+export default App;

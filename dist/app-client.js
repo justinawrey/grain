@@ -91,9 +91,6 @@ function jsx(element, props) {
     const result = typeof element === "string" ? createDomElement(element, props) : element(props);
     return result;
 }
-function mount(root) {
-    document.body.appendChild(root());
-}
 function App() {
     const count = reactive(0);
     const doubledCount = computed(()=>count.value * 2);
@@ -137,5 +134,8 @@ function Text({ name  }) {
             name
         ]
     });
+}
+function mount(root) {
+    document.body.appendChild(root());
 }
 mount(App);
