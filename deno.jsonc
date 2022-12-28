@@ -3,7 +3,13 @@
     "jsx": "react-jsx",
     "jsxImportSource": "grain",
     "types": ["./lib/jsx.d.ts"],
-    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable",
+      "deno.ns",
+      "deno.unstable"
+    ]
   },
   "importMap": "import_map.jsonc",
   "tasks": {
