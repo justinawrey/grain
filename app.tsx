@@ -1,6 +1,15 @@
 import { computed, effect, type Reactive, reactive } from "./lib/reactivity.ts";
+import { serve } from "./lib/serve.ts";
 
-function App() {
+function Text({ name }: { name: Reactive<string> }) {
+  return (
+    <p aria-label={name}>
+      Hello, {name}
+    </p>
+  );
+}
+
+function Home() {
   const count = reactive(0);
   const doubledCount = computed(() => count.value * 2);
   effect(() => {
@@ -25,12 +34,11 @@ function App() {
   );
 }
 
-function Text({ name }: { name: Reactive<string> }) {
-  return (
-    <p aria-label={name}>
-      Hello, {name}
-    </p>
-  );
+function About() {
+  return <div>About</div>;
 }
 
-export default App;
+await serve({
+  "/": Home,
+  "/about": About,
+});

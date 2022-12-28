@@ -1,6 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { effect } from "./reactivity.ts";
 import { isProxy } from "./is-proxy.ts";
+import { document } from "./document.ts";
 
 function createDomElement(element: string, props: any) {
   const el = document.createElement(element);
