@@ -1,9 +1,8 @@
 import { renderToString } from "./ssr.ts";
+import { serve as _serve } from "https://deno.land/std@0.170.0/http/server.ts";
 
 // deno-lint-ignore ban-types
-async function serve(routes: Record<string, Function>) {
-  const ac = new AbortController();
-
+function serve(routes: Record<string, Function>) {
   function handler(req: Request) {
     const { pathname } = new URL(req.url);
     const root = routes[pathname];
@@ -18,8 +17,7 @@ async function serve(routes: Record<string, Function>) {
     return new Response("Not Found", { status: 404 });
   }
 
-  await Deno.serve({ signal: ac.signal }, handler);
-  ac.abort();
+  _serve(handler);
 }
 
 export { serve };

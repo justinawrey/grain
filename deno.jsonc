@@ -13,6 +13,6 @@
   },
   "importMap": "import_map.jsonc",
   "tasks": {
-    "dev": "deno run -A --unstable --watch app.tsx"
+    "dev": "deno run -A --watch app.tsx"
   }
 }
