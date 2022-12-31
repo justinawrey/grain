@@ -1,9 +1,11 @@
 import { proxySymbol } from "./is-proxy.ts";
 
-const effectContext: (() => void)[] = [];
+const effectContext: EffectCallback[] = [];
+
+type EffectCallback = () => void;
 
 // Creates an effect that runs when reactive values are changed
-function effect(fn: () => void): void {
+function effect(fn: EffectCallback): void {
   effectContext.push(fn);
 
   // If the effect throws, we still need to remove it from global context
@@ -24,7 +26,7 @@ function reactive<T>(defaultValue: T): Reactive<T> {
     if (prop !== "value") throw new Error('Only "value" is supported');
   }
 
-  const subscribedEffects: Set<() => void> = new Set();
+  const subscribedEffects: Set<EffectCallback> = new Set();
   const reactiveObj = { value: defaultValue };
 
   return new Proxy(reactiveObj, {
